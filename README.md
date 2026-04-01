@@ -530,8 +530,8 @@ The only requirement is to include the original copyright notice and license.
 
 ## Changelog
 
-### Version 2.0 (Current)
-- **NEW: initialize.sh** - First-time setup script with security hardening
+### Version 1.0.0 (Current)
+- **initialize.sh** - First-time setup script with security hardening
   - UFW firewall configuration
   - Automatic security updates (unattended-upgrades)
   - fail2ban for SSH protection
@@ -539,21 +539,18 @@ The only requirement is to include the original copyright notice and license.
   - Essential utilities installation
   - Interactive and preset modes
   - Config file backups
-- **update.sh** - Complete rewrite with safety improvements
-  - Added `--check` mode to preview updates
-  - Added firmware update support (fwupd)
-  - Added old kernel cleanup
-  - Added Rust/cargo update support
+- **update.sh** - Comprehensive system update script
+  - `--check` mode to preview updates
+  - Firmware update support (fwupd)
+  - Old kernel cleanup
+  - Rust/cargo update support
   - Comprehensive logging with timestamps
   - Error tracking and reporting
-- **cleanup.sh** - Complete rewrite with safety improvements
-  - Added `--dry-run` and `--aggressive` modes
-  - Removed dangerous `/tmp` deletion
-  - Added Snap old revision cleanup
-  - Added Docker cleanup (aggressive mode)
-  - Added browser cache cleanup (aggressive mode)
+- **cleanup.sh** - Safe disk cleanup script
+  - `--dry-run` and `--aggressive` modes
+  - Safe operation (no dangerous `/tmp` deletion)
+  - Snap old revision cleanup
+  - Docker cleanup (aggressive mode)
+  - Browser cache cleanup (aggressive mode)
   - Space tracking before/after
-- **All scripts** - Improved terminal output with symbols and colors
-
-### Version 1.0 (Initial)
-- Basic update and cleanup functionality
+- **All scripts** - Beautiful terminal output with symbols and colors
