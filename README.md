@@ -6,19 +6,122 @@ A collection of safe, comprehensive scripts for maintaining and updating Ubuntu 
 
 ## Overview
 
-This repository provides two main maintenance scripts:
+This repository provides three comprehensive maintenance scripts covering the complete system lifecycle:
 
+- **initialize.sh** - First-time system setup with security hardening and essential configuration
 - **update.sh** - Comprehensive system update script covering APT, Snap, Flatpak, firmware, and development tools
 - **cleanup.sh** - Safe disk cleanup script with dry-run mode and aggressive cleanup options
 
-Both scripts feature:
+All scripts feature:
 - Beautiful terminal output with color-coded status indicators
-- Error handling and safety checks
-- Preview/dry-run modes
-- Detailed logging
+- Comprehensive error handling and safety checks
+- Preview/dry-run modes to see changes before applying
+- Detailed logging with timestamps
+- Interactive and non-interactive modes
 - Progress tracking
 
 ## Scripts
+
+### initialize.sh
+
+First-time system initialization script for new Ubuntu installations with security hardening and best practices.
+
+**What it configures:**
+
+**Security Hardening:**
+- UFW firewall configuration (deny incoming, allow outgoing)
+- Automatic security updates (unattended-upgrades)
+- fail2ban for SSH brute-force protection
+- SSH hardening (disable root login, key-only auth)
+
+**System Configuration:**
+- Swap file creation (if not present)
+- Timezone configuration
+- Essential system utilities
+- Development tools (optional)
+
+**User Experience:**
+- Useful bash aliases and shortcuts
+- Improved history settings
+- Better terminal colors
+- System maintenance aliases
+
+**Features:**
+- Three preset modes: minimal, standard, full
+- Interactive mode with questions for each section
+- Dry-run mode to preview changes
+- Automatic backups of modified config files
+- Safe, idempotent (can run multiple times)
+- Ubuntu version detection
+
+**Usage:**
+
+```bash
+# Interactive mode (recommended for first use)
+./initialize.sh
+
+# Minimal security hardening only
+./initialize.sh --minimal
+
+# Standard setup (recommended for most users)
+./initialize.sh --standard
+
+# Full setup including dev tools
+./initialize.sh --full
+
+# Preview what would be done
+./initialize.sh --dry-run
+
+# Non-interactive with standard preset
+./initialize.sh --standard --non-interactive
+
+# Show help
+./initialize.sh --help
+```
+
+**Preset Modes:**
+
+| Mode | Security | Utilities | Dev Tools | SSH Hardening | UX Improvements |
+|------|----------|-----------|-----------|---------------|-----------------|
+| `--minimal` | ✓ | ✗ | ✗ | ✗ | ✗ |
+| `--standard` | ✓ | ✓ | ✗ | ✗ | ✓ |
+| `--full` | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Interactive | Ask each | Ask each | Ask each | Ask each | Ask each |
+
+**Options:**
+
+| Option | Description |
+|--------|-------------|
+| `--minimal` | Critical security only (UFW, fail2ban, auto-updates) |
+| `--standard` | Security + common tools + basic config (recommended) |
+| `--full` | Everything including dev tools and SSH hardening |
+| `--non-interactive` | Run without prompts (uses defaults) |
+| `--dry-run` | Show what would be done without doing it |
+| `--no-log` | Disable logging to file |
+| `--help` | Show usage information |
+
+**What Gets Installed:**
+
+*Essential Utilities (standard/full):*
+- curl, wget, git, vim
+- htop, ncdu, tree
+- net-tools, dnsutils
+- zip, unzip
+
+*Development Tools (full only):*
+- build-essential, make, cmake
+- libssl-dev, pkg-config
+- python3-pip, python3-venv
+
+**Important Notes:**
+
+- Always run `initialize.sh --dry-run` first to preview changes
+- If enabling SSH hardening, ensure you have SSH keys set up
+- Firewall will automatically allow SSH if SSH service is running
+- Config backups are saved to `~/.config-backups-<timestamp>/`
+- Safe to run multiple times (idempotent)
+
+**Logs Location:** `~/.local/share/system-init-logs/initialize-YYYYMMDD-HHMMSS.log`
 
 ### update.sh
 
@@ -135,17 +238,19 @@ Safely cleans up disk space with intelligent detection and size tracking.
 
 2. Make scripts executable:
    ```bash
-   chmod +x update.sh cleanup.sh
+   chmod +x initialize.sh update.sh cleanup.sh
    ```
 
 3. (Optional) Create symbolic links for easy access:
    ```bash
+   sudo ln -s "$(pwd)/initialize.sh" /usr/local/bin/system-init
    sudo ln -s "$(pwd)/update.sh" /usr/local/bin/system-update
    sudo ln -s "$(pwd)/cleanup.sh" /usr/local/bin/system-cleanup
    ```
 
    Then you can run from anywhere:
    ```bash
+   system-init
    system-update
    system-cleanup
    ```
@@ -169,6 +274,24 @@ The scripts gracefully skip missing components:
 - `pip3`, `npm`, `cargo` - for package manager cache cleanup (aggressive mode)
 
 ## Recommended Usage
+
+### First-Time Setup (New Installation)
+```bash
+# Preview what will be configured
+./initialize.sh --dry-run
+
+# Run interactive setup (recommended)
+./initialize.sh
+
+# Or use standard preset for quick setup
+./initialize.sh --standard
+
+# Update system after initialization
+./update.sh
+
+# Reboot to apply all changes
+sudo reboot
+```
 
 ### Weekly Maintenance
 ```bash
@@ -203,7 +326,30 @@ The scripts gracefully skip missing components:
 ./update.sh
 ```
 
+### Server Deployment (Automated)
+```bash
+# Minimal security hardening for servers
+./initialize.sh --minimal --non-interactive
+
+# Keep system updated
+./update.sh --no-log
+
+# Periodic cleanup
+./cleanup.sh
+```
+
 ## Safety Features
+
+### initialize.sh Safety
+- Backs up all config files before modification (saved to `~/.config-backups-*/`)
+- Dry-run mode to preview all changes before applying
+- Detects Ubuntu version and warns if not 24.04+
+- Interactive mode asks before each major change
+- Idempotent - safe to run multiple times without harm
+- Tests SSH config before applying changes
+- Automatically allows SSH if service is detected (prevents lockout)
+- Provides rollback info for config changes
+- Never makes destructive changes without confirmation
 
 ### update.sh Safety
 - Checks for conflicting package managers before running
@@ -223,7 +369,7 @@ The scripts gracefully skip missing components:
 
 ## Terminal Output
 
-Both scripts feature beautiful, informative terminal output:
+All scripts feature beautiful, informative terminal output:
 
 ```
 ╔════════════════════════════════════════════════════════════╗
@@ -253,10 +399,31 @@ Symbols used:
 
 ## Troubleshooting
 
-### "Another package manager is running"
+### initialize.sh Issues
+
+**"This script is designed for Ubuntu systems"**
+- Script detected non-Ubuntu system. Only run on Ubuntu installations.
+
+**Locked out after SSH hardening**
+- SSH hardening requires SSH keys to be set up first
+- Restore from backup: `sudo cp ~/.config-backups-*/sshd_config.backup /etc/ssh/sshd_config`
+- Restart SSH: `sudo systemctl restart sshd`
+
+**UFW blocking connections**
+- Check rules: `sudo ufw status verbose`
+- Allow specific port: `sudo ufw allow <port>`
+- Disable temporarily: `sudo ufw disable`
+
+**Want to undo changes**
+- Config backups are in `~/.config-backups-<timestamp>/`
+- Restore specific file: `sudo cp ~/.config-backups-*/filename.backup /path/to/original`
+
+### update.sh Issues
+
+**"Another package manager is running"**
 Wait for other package operations to complete (e.g., Software Center, unattended-upgrades).
 
-### Script fails with permission errors
+**Script fails with permission errors**
 Ensure you have sudo privileges. The script will prompt for password when needed.
 
 ### Firmware updates not detected
@@ -364,16 +531,29 @@ The only requirement is to include the original copyright notice and license.
 ## Changelog
 
 ### Version 2.0 (Current)
-- Complete rewrite with safety improvements
-- Added `--check` and `--dry-run` modes
-- Added firmware update support
-- Removed dangerous `/tmp` deletion
-- Added Snap old revision cleanup
-- Added comprehensive logging
-- Improved terminal output with symbols and colors
-- Added error tracking and reporting
-- Added Docker cleanup (aggressive mode)
-- Added browser cache cleanup (aggressive mode)
+- **NEW: initialize.sh** - First-time setup script with security hardening
+  - UFW firewall configuration
+  - Automatic security updates (unattended-upgrades)
+  - fail2ban for SSH protection
+  - SSH hardening options
+  - Essential utilities installation
+  - Interactive and preset modes
+  - Config file backups
+- **update.sh** - Complete rewrite with safety improvements
+  - Added `--check` mode to preview updates
+  - Added firmware update support (fwupd)
+  - Added old kernel cleanup
+  - Added Rust/cargo update support
+  - Comprehensive logging with timestamps
+  - Error tracking and reporting
+- **cleanup.sh** - Complete rewrite with safety improvements
+  - Added `--dry-run` and `--aggressive` modes
+  - Removed dangerous `/tmp` deletion
+  - Added Snap old revision cleanup
+  - Added Docker cleanup (aggressive mode)
+  - Added browser cache cleanup (aggressive mode)
+  - Space tracking before/after
+- **All scripts** - Improved terminal output with symbols and colors
 
 ### Version 1.0 (Initial)
 - Basic update and cleanup functionality
