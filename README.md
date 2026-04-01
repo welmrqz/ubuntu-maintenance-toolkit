@@ -1,5 +1,7 @@
 # Ubuntu System Maintenance Scripts
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A collection of safe, comprehensive scripts for maintaining and updating Ubuntu 24.04+ systems.
 
 ## Overview
@@ -320,15 +322,44 @@ docker system prune -a --volumes -f
 
 ## Contributing
 
-Suggestions and improvements are welcome! Please ensure:
-- Scripts remain safe and non-destructive
-- Features are well-documented
-- Error handling is comprehensive
-- Terminal output is clear and informative
+Contributions are welcome! Whether it's bug fixes, new features, or documentation improvements.
+
+**Guidelines:**
+- Keep scripts safe and non-destructive
+- Test thoroughly on Ubuntu 24.04+
+- Document new features in the README
+- Maintain comprehensive error handling
+- Keep terminal output clear and informative
+- Follow existing code style and formatting
+
+**How to contribute:**
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Test your changes thoroughly
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+**Ideas for contributions:**
+- Support for additional package managers
+- More cleanup targets (safely!)
+- Performance improvements
+- Better error messages
+- Translations
+- Additional development tool updates
 
 ## License
 
-These scripts are provided as-is for system maintenance purposes. Use at your own discretion.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+You are free to:
+- Use these scripts for personal or commercial purposes
+- Modify and adapt them to your needs
+- Distribute them to others
+- Include them in your own projects
+
+The only requirement is to include the original copyright notice and license.
 
 ## Changelog
 
