@@ -83,7 +83,7 @@ print_skip() {
 get_size_mb() {
     local path="$1"
     if [ -e "$path" ]; then
-        du -sm "$path" 2>/dev/null | cut -f1 || echo "0"
+        (du -sm "$path" 2>/dev/null || true) | awk 'NR==1{print $1+0; exit} END{if(!NR) print 0}'
     else
         echo "0"
     fi
@@ -126,7 +126,7 @@ INITIAL_DISK=$(df / | tail -1 | awk '{print $3}')
 
 echo -e "${BOLD}Initial Disk Usage:${NC}"
 df -h / /home 2>/dev/null | grep -v "Filesystem" | while read -r line; do
-    echo -e "${DIM}  $(echo "$line" | awk '{print $6": "$3" used / "$2" total ("$5" full)")')${NC}"
+    echo -e "${DIM}  $(echo "$line" | awk '{print $6": "$3" used / "$2" total ("$5" full)"}')${NC}"
 done
 echo ""
 
@@ -345,7 +345,7 @@ TOTAL_FREED=$(((INITIAL_DISK - FINAL_DISK) / 1024))
 
 echo -e "${BOLD}Final Disk Usage:${NC}"
 df -h / /home 2>/dev/null | grep -v "Filesystem" | while read -r line; do
-    echo -e "${DIM}  $(echo "$line" | awk '{print $6": "$3" used / "$2" total ("$5" full)">')${NC}"
+    echo -e "${DIM}  $(echo "$line" | awk '{print $6": "$3" used / "$2" total ("$5" full)"}')${NC}"
 done
 
 echo ""
